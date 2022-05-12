@@ -5,3 +5,9 @@
 #include<fstream>
 #include<iostream>
 
+
+
+#define GAME_SPEED 800
+
+
+
