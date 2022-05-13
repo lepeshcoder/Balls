@@ -22,21 +22,16 @@ private:
 	// Флаг движения
 	bool IsMove;
 
-	// Текстура для Шарика
-	Texture Texture;
 
 	// Объект для отрисовки
-	CircleShape GraphicBall;
+	Sprite BallSprite;
 
 
 public:
 
 	// Конструктор
-	Ball(Vector2f Centre, float Radius, Color color);
+	Ball(Vector2f Centre, float Radius, sf::Texture& Texture);
 
-	// Загрузка Текстуры
-	void SetTexture(sf::Texture Texture);
-	
 	// Отрисовка шарика
 	void Draw(sf::RenderWindow& window);
 

@@ -1,19 +1,23 @@
 #include "include.h"
 #include "Ball.h"
+#include "Game.h"
 
 
 
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(800, 800), "Bil'yard!");
+    sf::RenderWindow window(sf::VideoMode(1600, 900), "Bil'yard!");
    
 
-    Ball ball(Vector2f(20, 400), 10, Color::Red);
+
+    Game Game(window);
+
+   
     Clock clock;
 
-    float FrictionCoeff = 0.0005;
-    Vector2f Dir(1, 0);
+    float FrictionCoeff = 0.0002;
+    Vector2f Dir(3, -2);
     float speed = 0.5;
     
 
@@ -32,14 +36,11 @@ int main()
 
         if (Keyboard::isKeyPressed(Keyboard::Space))
         {
-            ball.SetIsMove(true);
-            ball.ChangeDir(Dir);
-            ball.SetSpeed(speed);   
+              
         }
-        ball.Update(time, FrictionCoeff);
- 
-        window.clear();
-        ball.Draw(window);
+       
+       // window.clear();
+        Game.Draw(window);
         window.display();
     }
 
