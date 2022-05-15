@@ -5,8 +5,11 @@ class Cue {
 
 private:
 
+	// Текстура Кия
+	Texture* CueTexture;
+
 	// Спрайт Кия
-	Sprite CueSprite;
+	Sprite* CueSprite;
 
 	// Сила удара по шару
 	float HitPower;
@@ -17,14 +20,39 @@ private:
 	// Угол удара
 	float angle;
 
+	// Активна ли фаза удара
+	bool IsHit = false;
+
 public:
 
 	Cue();
 
-	// Конструктор
-	Cue(sf::Texture& Texture);
-	
+	Cue(std::string CueTexturePath);
+
+	~Cue();
+
 	// Отрисовка Кия
 	void Draw(sf::RenderWindow& window);
+
+
+	void SetAngle(float Angle);
+
+	float GetAngle();
+
+	// Установка Кия бойком к заданной точке
+	void SetPosition(Vector2f Position);
+
+	// Обновление позиции и силы удара Кия при ударе
+	void Update(float distance);
+
+	void SetIsHit(bool IsHit);
+
+	bool GetIsHit();
+
+	void SetHitPower(float HitPower);
+
+	float GetHitPower();
+
+	void Hit();
 
 };

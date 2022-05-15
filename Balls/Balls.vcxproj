@@ -154,6 +154,7 @@
     <ClCompile Include="Ball.cpp" />
     <ClCompile Include="Cue.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="HitPowerPanel.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="Table.cpp" />
   </ItemGroup>
@@ -161,6 +162,7 @@
     <ClInclude Include="Ball.h" />
     <ClInclude Include="Cue.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="HitPowerPanel.h" />
     <ClInclude Include="include.h" />
     <ClInclude Include="Table.h" />
   </ItemGroup>

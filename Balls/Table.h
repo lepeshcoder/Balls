@@ -5,18 +5,28 @@ class Table
 
 private:
 
-	Sprite TableSprite;
+	Texture* TableTexture;
+
+	Sprite* TableSprite;
+
+	float Friction;
 
 
 public:
 
 	Table();
 
-	Table(Texture& Texture,sf::RenderWindow& window);
+	Table(std::string TableTexturePath, sf::RenderWindow& window, float Friction = 0);
 
 	void Draw(sf::RenderWindow& window);
 
-	void SetTexture(Texture& Texture, sf::RenderWindow& window);
+	void SetFriction(float Friction);
+	
+	~Table();
+
+
+	
+	
 
 };
 

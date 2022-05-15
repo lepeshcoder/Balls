@@ -16,21 +16,32 @@ private:
 	// Скорость шарика ( Величина )
 	float Speed;
 
-	// Вектор направления шарика
-	Vector2f SpeedVector;
+	// Угол движения шарика
+	float Angle;
 
 	// Флаг движения
 	bool IsMove;
 
+	// Текстура шарика
+	Texture* BallTexture;
 
-	// Объект для отрисовки
-	Sprite BallSprite;
+	// Спрайт для отрисовки
+	Sprite* BallSprite;
 
 
 public:
 
+	// Конструктор по умолчанию
+	Ball();
+
 	// Конструктор
-	Ball(Vector2f Centre, float Radius, sf::Texture& Texture);
+	Ball(Vector2f Centre, float Radius, std::string TexturePath);
+
+	// Конструктор копирования
+	Ball(const Ball& other);
+
+	// Деструктор
+	~Ball();
 
 	// Отрисовка шарика
 	void Draw(sf::RenderWindow& window);
@@ -39,13 +50,19 @@ public:
 	void Update(float time, float friction);
 
 	// Смена направления
-	void ChangeDir(Vector2f SpeedVector);
+	void ChangeDir(float angle);
 
 	// Установка скорости
 	void SetSpeed(float Speed);
 
 	// Установка флага движения
 	void SetIsMove(bool IsMove);
+
+	// Геттер Позиции центра
+	Vector2f GetCentre();
+
+	
+
 
 	
 	
