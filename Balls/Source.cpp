@@ -36,12 +36,15 @@ int main()
     float speed = 0.5;
     float angle = 0;
     float CueHitDistance = 0;
+    float DeltaTime = 0;
 
     Clock HitClock;
 
+
+
     while (window.isOpen())
     {
-        
+       
         float time = clock.getElapsedTime().asMicroseconds();
         clock.restart();
         time /= GAME_SPEED;
@@ -56,7 +59,6 @@ int main()
         if (Keyboard::isKeyPressed(Keyboard::A))
         {
             Game.SetCueAngle(angle);
-            
             angle += speed;
         }
 
@@ -69,7 +71,7 @@ int main()
         if (Mouse::isButtonPressed(Mouse::Button::Left))
         {
             Vector2i MousePosition = Mouse::getPosition(window);
-           
+            //std::cout << MousePosition.x << " : " << MousePosition.y << std::endl;
             if (Game.IsHitPanelActive(Vector2f(MousePosition.x,MousePosition.y)))
             {
                 Game.SetCueIsHit(true);

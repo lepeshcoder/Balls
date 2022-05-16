@@ -64,5 +64,9 @@ public:
 
 	void SetHitPowerPanelIsUpdate(bool IsUpdate);
 
+	void PerformStaticCollisisons();
+
+	void PerformColiderCollision(Rect<float> &Colider);
+
 };
 

@@ -3,12 +3,12 @@
 
 Cue::Cue()
 {
-	this->angle = 0;
-	this->CueSprite = new Sprite();
-	this->CueTexture = new Texture();
-	this->HitPower = 0;
-	this->IsHit = false;
-	this->Position = Vector2f(0, 0);
+	angle = 0;
+	CueSprite = new Sprite();
+	CueTexture = new Texture();
+	HitPower = 0;
+	IsHit = false;
+	Position = Vector2f(0, 0);
 }
 
 Cue::Cue(std::string CueTexturePath)
@@ -20,7 +20,6 @@ Cue::Cue(std::string CueTexturePath)
 	CueSprite->setOrigin(CueTexture->getSize().x + BALL_RADIUS + 1, CueTexture->getSize().y / 2.0);
 	angle = 0;
 	HitPower = 0;
-	angle = 0;
 }
 
 Cue::~Cue()
@@ -37,8 +36,11 @@ void Cue::Draw(sf::RenderWindow& window)
 
 void Cue::SetAngle(float Angle)
 {
-	this->angle = (int(Angle) % 360 < 0) ? (360 + Angle) : (int(Angle) % 360);
+	this->angle = Angle;
+	while (angle > 359) angle -= 360;
+	while (angle < 0) angle += 360;
 	CueSprite->setRotation(angle);
+	std::cout << "”гол полученный  ием в сеттере: " << angle << std::endl;
 }
 
 float Cue::GetAngle()

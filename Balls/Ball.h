@@ -38,7 +38,7 @@ public:
 	Ball(Vector2f Centre, float Radius, std::string TexturePath);
 
 	// Конструктор копирования
-	Ball(const Ball& other);
+	Ball(const Ball &other);
 
 	// Деструктор
 	~Ball();
@@ -61,7 +61,11 @@ public:
 	// Геттер Позиции центра
 	Vector2f GetCentre();
 
-	
+	// Обработка статических коллизий двух шаров
+	void ProcessingStaticCollision(Ball& OtherBall);
+
+	void ColiderCollisison(Rect<float> &Colider);
+
 
 
 	

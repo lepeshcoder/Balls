@@ -7,6 +7,7 @@ Table::Table()
 	TableTexture = new Texture();
 	TableSprite = new Sprite();
 	Friction = 0;
+	Colider = Rect<float>(0, 0, 0, 0);
 }
 
 Table::Table(std::string TableTexturePath, sf::RenderWindow& window, float Friction)
@@ -18,6 +19,7 @@ Table::Table(std::string TableTexturePath, sf::RenderWindow& window, float Frict
 	TableSprite->setPosition(Vector2f(0, 0));
 	TableSprite->setScale(float(window.getSize().x) / TableTexture->getSize().x, float(window.getSize().y) / TableTexture->getSize().y);
 	this->Friction = Friction;
+	Colider = Rect<float>(136, 128, 1461 - 136, 770 - 128);
 }
 
 void Table::Draw(sf::RenderWindow& window)
@@ -29,6 +31,11 @@ void Table::Draw(sf::RenderWindow& window)
 void Table::SetFriction(float Friction)
 {
 	this->Friction = Friction;
+}
+
+Rect<float>& Table::GetColider()
+{
+	return Colider;
 }
 
 Table::~Table()

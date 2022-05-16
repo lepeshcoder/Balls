@@ -4,7 +4,6 @@ Game::Game(sf::RenderWindow& window,std::string CueTexturePath, std::string Tabl
 {
 	GameState = START;
 	cue = new Cue(CueTexturePath);
-	MainBall = new Ball(Vector2f(650, 450), BALL_RADIUS, MainBallTexturePath);
 	table = new Table(TableTexturePath, window, FRICTION);
 	hitPowerPanel = new HitPowerPanel(HitPowerPanelTexturePath, HitPowerCueTexturePath);
 }
@@ -21,8 +20,7 @@ Game::~Game()
 void Game::Draw(sf::RenderWindow& window)
 {
 	table->Draw(window);
-	MainBall->Draw(window);
-	for (int i = 0; i < Balls.size(); i++) Balls[i].Draw(window);
+	for (auto& i : Balls) i.Draw(window);
 	cue->Draw(window);
 	hitPowerPanel->Draw(window);
 }
@@ -75,6 +73,7 @@ void Game::Initialize(std::string BallTexturePath)
 	float deltaX, deltaY;
 	deltaX = 2 * BALL_RADIUS * sin(PI/3); deltaY = 2 * BALL_RADIUS * cos(PI/3);
 	
+	AddBall(Ball(Vector2f(650, 450), BALL_RADIUS, BallTexturePath));
 	for (int i = 1; i <= 5 ; i++)
 	{
 		Vector2f temp = Position + Vector2f((i - 1) * deltaX, (1 - i) * deltaY);
@@ -84,16 +83,19 @@ void Game::Initialize(std::string BallTexturePath)
 			temp.y += 2 * BALL_RADIUS;
 		}
 	}
+	MainBall = &Balls[0];
 	cue->SetPosition(MainBall->GetCentre());
 }
 
 void Game::Update(float time, float CueHitDistance)
 {
-	std::cout << cue->GetAngle() << std::endl;
 	cue->Update(CueHitDistance);
-	MainBall->Update(time, FRICTION);
 	for (auto& i : Balls) i.Update(time, FRICTION);
+	PerformColiderCollision(table->GetColider());
+	PerformStaticCollisisons();
+	
 	hitPowerPanel->Update(CueHitDistance);
+
 }
 
 void Game::CueHit()
@@ -101,7 +103,7 @@ void Game::CueHit()
 	cue->Hit();
 	hitPowerPanel->ResetCuePosition();
 	MainBall->SetSpeed(cue->GetHitPower());
-	MainBall->ChangeDir(cue->GetAngle());
+	MainBall->ChangeDir(360 - cue->GetAngle()); 
 	MainBall->SetIsMove(true);
 }
 
@@ -123,4 +125,16 @@ float Game::GetHitPowerPanelHeight()
 void Game::SetHitPowerPanelIsUpdate(bool IsUpdate)
 {
 	hitPowerPanel->SetIsUpdate(IsUpdate);
+}
+
+void Game::PerformStaticCollisisons()
+{
+	for (auto& i : Balls)
+		for (auto& j : Balls)
+			if (&i != &j) i.ProcessingStaticCollision(j);
+}
+
+void Game::PerformColiderCollision(Rect<float> &Colider)
+{
+	for (auto& i : Balls) i.ColiderCollisison(Colider);
 }

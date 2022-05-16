@@ -42,7 +42,7 @@ Ball::~Ball()
 	delete BallSprite;
 }
 
-Ball::Ball(const Ball& other)
+Ball::Ball(const Ball &other)
 {
 	//std::cout << "Вызвался конструктор копирования у обьекта " << this << " по обьекту " << &other << std::endl;
 	BallTexture = new Texture(*other.BallTexture);
@@ -53,17 +53,18 @@ Ball::Ball(const Ball& other)
 	Centre = other.Centre;
 	IsMove = other.IsMove;
 	Radius = other.Radius;
+	Angle = other.Angle;
+	Speed = other.Speed;
 }
 
 void Ball::Update(float time,float friction)
 {
 	if (IsMove)
 	{
-		std::cout << "FUNC MAIN BALL UPDATE: ANGLE = " << Angle << std::endl;
 		float dx = cos(Angle * PI / 180) * Speed * time;
-		float dy = sin(Angle * PI / 180) * Speed * time;
+		float dy = -sin(Angle * PI / 180) * Speed * time;
 		Centre += Vector2f(dx, dy);
-		BallSprite->move(Vector2f(dx, dy));
+		BallSprite->move(Vector2f(dx,dy));
 		if (Speed > friction) Speed -= friction * time;
 		else
 		{
@@ -88,10 +89,52 @@ Vector2f Ball::GetCentre()
 	return Centre;
 }
 
+void Ball::ProcessingStaticCollision(Ball& OtherBall)
+{
+	// Расстояние между центрами шаров
+	float distance = sqrt(pow(Centre.x - OtherBall.Centre.x, 2) + pow(Centre.y - OtherBall.Centre.y, 2)); 
+	if (distance + 0.01 < Radius + OtherBall.Radius) // Если произошло наложение
+	{
+		float temp = Radius + OtherBall.Radius - distance; // Расстояние наложения
+		Centre += Vector2f(-temp / 2 * cos(Angle * PI / 180), temp / 2 * sin(Angle * PI / 180));
+		BallSprite->setPosition(Centre);
+		OtherBall.Centre += Vector2f(temp / 2 * cos(OtherBall.Angle * PI / 180), temp / 2 * sin(OtherBall.Angle * PI / 180));
+		OtherBall.BallSprite->setPosition(OtherBall.Centre);	
+	}
+	else return;
+}
+
 void Ball::ChangeDir(float angle)
 { 
-	
 	this->Angle = angle;
+	if (Angle > 359) Angle -= 360;
+	if (Angle < 0) Angle += 360;
+	std::cout << "Переданый угол шару от Кия: " << Angle << std::endl;
+}
+
+void Ball::ColiderCollisison(Rect<float> &Colider)
+{
+	if (Centre.x - Radius < Colider.left)
+	{
+		ChangeDir(180 - Angle);
+	}
+	else if (Centre.x + Radius > Colider.left + Colider.width)
+	{
+
+		ChangeDir(180 - Angle);
+
+	}
+	else if (Centre.y - Radius < Colider.top)
+	{
+
+		ChangeDir(360 - Angle);
+	}
+	else if (Centre.y + Radius > Colider.top + Colider.height)
+	{
+
+		ChangeDir(360 - Angle);
+
+	}
 }
 
 

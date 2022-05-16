@@ -11,6 +11,8 @@ private:
 
 	float Friction;
 
+	Rect<float> Colider;
+
 
 public:
 
@@ -21,6 +23,8 @@ public:
 	void Draw(sf::RenderWindow& window);
 
 	void SetFriction(float Friction);
+
+	 Rect<float>& GetColider();
 	
 	~Table();
 

@@ -34,7 +34,7 @@ public:
 	// Отрисовка Кия
 	void Draw(sf::RenderWindow& window);
 
-
+	// Изначальный угол равен 0 угол возрастает по часовой стрелке и ограничен от 0 до 360 градусов
 	void SetAngle(float Angle);
 
 	float GetAngle();

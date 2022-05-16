@@ -44,7 +44,6 @@ void HitPowerPanel::Update(float distance)
 	if (IsUpdate)
 	{
 		HitPowerCueSprite->setPosition(HitPowerCueSprite->getPosition().x, HitPowerPanelSprite->getPosition().y + distance);
-		std::cout << HitPowerCueSprite->getPosition().y << std::endl;
 		IsUpdate = false;
 	}
 }
