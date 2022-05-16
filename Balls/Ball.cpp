@@ -117,22 +117,24 @@ void Ball::ColiderCollisison(Rect<float> &Colider)
 	if (Centre.x - Radius < Colider.left)
 	{
 		ChangeDir(180 - Angle);
+
 	}
 	else if (Centre.x + Radius > Colider.left + Colider.width)
 	{
-
 		ChangeDir(180 - Angle);
+
 
 	}
 	else if (Centre.y - Radius < Colider.top)
 	{
-
 		ChangeDir(360 - Angle);
+
 	}
 	else if (Centre.y + Radius > Colider.top + Colider.height)
 	{
-
 		ChangeDir(360 - Angle);
+		std::cout << "kal";
+
 
 	}
 }
