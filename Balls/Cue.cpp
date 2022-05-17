@@ -40,7 +40,7 @@ void Cue::SetAngle(float Angle)
 	while (angle > 359) angle -= 360;
 	while (angle < 0) angle += 360;
 	CueSprite->setRotation(angle);
-	std::cout << "”гол полученный  ием в сеттере: " << angle << std::endl;
+	//std::cout << "”гол полученный  ием в сеттере: " << angle << std::endl;
 }
 
 float Cue::GetAngle()

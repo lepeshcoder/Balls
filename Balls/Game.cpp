@@ -72,8 +72,11 @@ void Game::Initialize(std::string BallTexturePath)
 	Vector2f Position(1000, 450);
 	float deltaX, deltaY;
 	deltaX = 2 * BALL_RADIUS * sin(PI/3); deltaY = 2 * BALL_RADIUS * cos(PI/3);
-	
+
 	AddBall(Ball(Vector2f(650, 450), BALL_RADIUS, BallTexturePath));
+	/*AddBall(Ball(Vector2f(1050, 450), BALL_RADIUS, BallTexturePath));
+	AddBall(Ball(Vector2f(1050, 250), BALL_RADIUS, BallTexturePath));
+	AddBall(Ball(Vector2f(1050, 650), BALL_RADIUS, BallTexturePath));*/
 	for (int i = 1; i <= 5 ; i++)
 	{
 		Vector2f temp = Position + Vector2f((i - 1) * deltaX, (1 - i) * deltaY);
@@ -131,6 +134,13 @@ void Game::PerformStaticCollisisons()
 	for (auto& i : Balls)
 		for (auto& j : Balls)
 			if (&i != &j) i.ProcessingStaticCollision(j);
+	/*for (int i = 0; i < Balls.size(); i++)
+	{
+		for (int j = i + 1; j < Balls.size(); j++)
+		{
+			Balls[i].ProcessingStaticCollision(Balls[j]);
+		}
+	}*/
 }
 
 void Game::PerformColiderCollision(Rect<float> &Colider)

@@ -63,7 +63,7 @@ int main()
         if (Mouse::isButtonPressed(Mouse::Button::Left))
         {
             Vector2i MousePosition = Mouse::getPosition(window);
-            //std::cout << MousePosition.x << " : " << MousePosition.y << std::endl;
+           // std::cout << MousePosition.x << " : " << MousePosition.y << std::endl;
             if (Game.IsHitPanelActive(Vector2f(MousePosition.x,MousePosition.y)))
             {
                 Game.SetCueIsHit(true);
