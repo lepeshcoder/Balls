@@ -52,7 +52,7 @@ public:
 	void Initialize(std::string BallTexturePath);
 
 	// Обновление Игры
-	void Update(float time,float CueHitDistance);
+	void Update(float time);
 
 	void CueHit();
 
@@ -67,6 +67,10 @@ public:
 	void PerformStaticCollisisons();
 
 	void PerformColiderCollision(Rect<float> &Colider);
+
+	void SetCueHitDistance(float CueHitDistance);
+
+	float GetCueHitDistance();
 
 };
 

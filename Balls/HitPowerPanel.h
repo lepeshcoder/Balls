@@ -14,6 +14,8 @@ private:
 
 	Sprite* HitPowerCueSprite;
 
+	float CueHitDistance;
+
 
 
 public: 
@@ -37,6 +39,10 @@ public:
 	void SetIsUpdate(bool IsUpdate);
 
 	void ResetCuePosition();
+
+	void SetCueHitDistance(float CueHitDistance);
+
+	float GetCueHitDistance();
 
 
 };

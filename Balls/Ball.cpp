@@ -93,12 +93,12 @@ void Ball::ProcessingStaticCollision(Ball& OtherBall)
 {
 	// Расстояние между центрами шаров
 	float distance = sqrt(pow(Centre.x - OtherBall.Centre.x, 2) + pow(Centre.y - OtherBall.Centre.y, 2)); 
-	if (distance +0.01 < Radius + OtherBall.Radius) // Если произошло наложение
+	if (distance + 0.01 < Radius + OtherBall.Radius) // Если произошло наложение
 	{
 		float temp = Radius + OtherBall.Radius - distance; // Расстояние наложения
-		Centre += Vector2f(-temp / 2 * abs(cos(Angle * PI / 180)), temp / 2 * sin(Angle * PI / 180));
+		Centre += Vector2f(-temp / 2 * abs(cos(Angle * PI / 180)), 0);// temp / 2 * sin(Angle * PI / 180));
 		BallSprite->setPosition(Centre);
-		OtherBall.Centre += Vector2f(temp / 2 * abs(cos(OtherBall.Angle * PI / 180)), temp / 2 * sin(OtherBall.Angle * PI / 180));
+		OtherBall.Centre += Vector2f(temp / 2 * abs(cos(OtherBall.Angle * PI / 180)), 0); // temp / 2 * sin(OtherBall.Angle * PI / 180));
 		OtherBall.BallSprite->setPosition(OtherBall.Centre);	
 	}
 	else return;

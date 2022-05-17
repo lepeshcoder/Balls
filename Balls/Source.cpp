@@ -3,21 +3,17 @@
 #include "Game.h"
 
 
+/*
+    1) Пофиксить ProcessingStaticCollision
+    2) Сделать динамические коллизии
+    3) Обработать попадание шаров в лунку
+*/
+
 int main()
 {
 
     setlocale(LC_ALL, "RUS");
     sf::RenderWindow window(sf::VideoMode(1600, 900), "Bil'yard!");
-
-   
-
-    /*Sprite BlackBox;
-    BlackBox.setColor(Color::Black);
-    BlackBox.setPosition(0, 700); 
-    BlackBox.setTexture(CuePanel);
-    BlackBox.setScale(0.5, 0.5);*/
-
-
 
 
     std::string CueTexturePath = "..\\Graphics\\Cue.png";
@@ -36,10 +32,6 @@ int main()
     float speed = 0.5;
     float angle = 0;
     float CueHitDistance = 0;
-    float DeltaTime = 0;
-
-    Clock HitClock;
-
 
 
     while (window.isOpen())
@@ -76,8 +68,8 @@ int main()
             {
                 Game.SetCueIsHit(true);
                 Game.SetHitPowerPanelIsUpdate(true);
-                CueHitDistance = MousePosition.y - Game.GetHitPowerPanelTopPoint();
-                Game.SetCueHitPower(CueHitDistance / Game.GetHitPowerPanelHeight() * MAX_CUE_POWER);
+                Game.SetCueHitDistance(MousePosition.y - Game.GetHitPowerPanelTopPoint());
+                Game.SetCueHitPower(Game.GetCueHitDistance() / Game.GetHitPowerPanelHeight() * MAX_CUE_POWER);
             }
         }
 
@@ -87,11 +79,12 @@ int main()
             Game.CueHit();
         }
 
-        
+
         window.clear();
-        Game.Update(time,CueHitDistance);
+        Game.Update(time);
         Game.Draw(window);
         window.display();
+
     }
 
     return 0;

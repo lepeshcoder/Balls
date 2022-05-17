@@ -87,22 +87,23 @@ void Game::Initialize(std::string BallTexturePath)
 	cue->SetPosition(MainBall->GetCentre());
 }
 
-void Game::Update(float time, float CueHitDistance)
+void Game::Update(float time)
 {
-	cue->Update(CueHitDistance);
-	for (auto& i : Balls) i.Update(time, FRICTION);
-	PerformColiderCollision(table->GetColider());
-	PerformStaticCollisisons();
-	hitPowerPanel->Update(CueHitDistance);
+	cue->Update(hitPowerPanel->GetCueHitDistance());  // Обновление позиции кия
+	for (auto& i : Balls) i.Update(time, FRICTION); // Обновление позиции шаров 
+	PerformColiderCollision(table->GetColider()); // Обработка коллизий с колайдером(столом)
+	PerformStaticCollisisons(); // Обработка статических коллизий между шариками
+	hitPowerPanel->Update(hitPowerPanel->GetCueHitDistance()); // Jбновление позиции Кия на панели силы удара
 }
 
 void Game::CueHit()
 {
-	cue->Hit();
-	hitPowerPanel->ResetCuePosition();
-	MainBall->SetSpeed(cue->GetHitPower());
-	MainBall->ChangeDir(360 - cue->GetAngle()); 
-	MainBall->SetIsMove(true);
+	cue->Hit(); // Возвращение кия к шару
+	hitPowerPanel->ResetCuePosition(); // Возвращения кия на Панели силы удара в исходное положение
+	MainBall->SetSpeed(cue->GetHitPower()); // Задание начальной скорости Шару
+	MainBall->ChangeDir(360 - cue->GetAngle()); // Передача ему угла
+	MainBall->SetIsMove(true); // Установка флага на возможность двигаться
+	
 }
 
 bool Game::IsHitPanelActive(Vector2f Point)
@@ -135,4 +136,14 @@ void Game::PerformStaticCollisisons()
 void Game::PerformColiderCollision(Rect<float> &Colider)
 {
 	for (auto& i : Balls) i.ColiderCollisison(Colider);
+}
+
+void Game::SetCueHitDistance(float CueHitDistance)
+{
+	this->hitPowerPanel->SetCueHitDistance(CueHitDistance);
+}
+
+float Game::GetCueHitDistance()
+{
+	return hitPowerPanel->GetCueHitDistance();
 }

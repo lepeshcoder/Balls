@@ -7,6 +7,7 @@ HitPowerPanel::HitPowerPanel()
 	HitPowerCueTexture = new Texture();
 	HitPowerCueSprite = new Sprite();
 	IsUpdate = false;
+	CueHitDistance = 0;
 }
 
 HitPowerPanel::HitPowerPanel(std::string HitPowerPanelTexturePath, std::string HitPowerCueTexturePath)
@@ -28,6 +29,8 @@ HitPowerPanel::HitPowerPanel(std::string HitPowerPanelTexturePath, std::string H
 	HitPowerCueSprite->setPosition(5, 200);
 	HitPowerCueSprite->setScale(0.5, 0.9);
 	IsUpdate = false;
+
+	CueHitDistance = 0;
 
 }
 
@@ -77,4 +80,14 @@ void HitPowerPanel::SetIsUpdate(bool IsUpdate)
 void HitPowerPanel::ResetCuePosition()
 {
 	HitPowerCueSprite->setPosition(5, 200);
+}
+
+void HitPowerPanel::SetCueHitDistance(float CueHitDistance)
+{
+	this->CueHitDistance = CueHitDistance;
+}
+
+float HitPowerPanel::GetCueHitDistance()
+{
+	return CueHitDistance;
 }
