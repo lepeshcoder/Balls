@@ -12,7 +12,7 @@ using namespace sf;
 
 #define GAME_SPEED 800
 #define BALL_RADIUS 20
-#define FRICTION 0.0004
+#define FRICTION 0.0002
 #define MAX_CUE_POWER 2
 
 

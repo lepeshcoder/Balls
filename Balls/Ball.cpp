@@ -93,16 +93,17 @@ void Ball::ProcessingStaticCollision(Ball& OtherBall)
 {
 	// Расстояние между центрами шаров
 	float distance = sqrt(pow(Centre.x - OtherBall.Centre.x, 2) + pow(Centre.y - OtherBall.Centre.y, 2)); 
-	if (distance + 0.01 < Radius + OtherBall.Radius) // Если произошло наложение
+	if (distance +0.01 < Radius + OtherBall.Radius) // Если произошло наложение
 	{
 		float temp = Radius + OtherBall.Radius - distance; // Расстояние наложения
-		Centre += Vector2f(-temp / 2 * cos(Angle * PI / 180), temp / 2 * sin(Angle * PI / 180));
+		Centre += Vector2f(-temp / 2 * abs(cos(Angle * PI / 180)), temp / 2 * sin(Angle * PI / 180));
 		BallSprite->setPosition(Centre);
-		OtherBall.Centre += Vector2f(temp / 2 * cos(OtherBall.Angle * PI / 180), temp / 2 * sin(OtherBall.Angle * PI / 180));
+		OtherBall.Centre += Vector2f(temp / 2 * abs(cos(OtherBall.Angle * PI / 180)), temp / 2 * sin(OtherBall.Angle * PI / 180));
 		OtherBall.BallSprite->setPosition(OtherBall.Centre);	
 	}
 	else return;
 }
+
 
 void Ball::ChangeDir(float angle)
 { 
@@ -116,26 +117,33 @@ void Ball::ColiderCollisison(Rect<float> &Colider)
 {
 	if (Centre.x - Radius < Colider.left)
 	{
+		float distance = abs(Colider.left - (Centre.x - Radius));
+		Centre += Vector2f(distance * abs(cos(Angle * PI / 180)), distance * sin(Angle * PI / 180));
+		BallSprite->move(Vector2f(distance * abs(cos(Angle * PI / 180)), distance * sin(Angle * PI / 180)));
 		ChangeDir(180 - Angle);
 
 	}
 	else if (Centre.x + Radius > Colider.left + Colider.width)
 	{
+		float distance = abs((Colider.left + Colider.width) - (Centre.x + Radius));
+		Centre += Vector2f(-distance * abs(cos(Angle * PI / 180)), distance * sin(Angle * PI / 180));
+		BallSprite->move(Vector2f(-distance * abs(cos(Angle * PI / 180)), distance * sin(Angle * PI / 180)));
 		ChangeDir(180 - Angle);
-
-
 	}
 	else if (Centre.y - Radius < Colider.top)
 	{
+		float distance = abs(Colider.top - (Centre.y - Radius));
+		Centre += Vector2f(distance * cos(Angle * PI / 180), distance * abs(sin(Angle * PI / 180)));
+		BallSprite->move(Vector2f(distance * cos(Angle * PI / 180), distance * abs(sin(Angle * PI / 180))));
 		ChangeDir(360 - Angle);
 
 	}
 	else if (Centre.y + Radius > Colider.top + Colider.height)
 	{
+		float distance = abs((Centre.y + Radius) - (Colider.top + Colider.height));
+		Centre += Vector2f(distance * cos(Angle * PI / 180), -distance * abs(sin(Angle * PI / 180)));
+		BallSprite->move(Vector2f(distance * cos(Angle * PI / 180), -distance * abs(sin(Angle * PI / 180))));
 		ChangeDir(360 - Angle);
-		std::cout << "kal";
-
-
 	}
 }
 

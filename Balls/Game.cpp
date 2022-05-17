@@ -93,9 +93,7 @@ void Game::Update(float time, float CueHitDistance)
 	for (auto& i : Balls) i.Update(time, FRICTION);
 	PerformColiderCollision(table->GetColider());
 	PerformStaticCollisisons();
-	
 	hitPowerPanel->Update(CueHitDistance);
-
 }
 
 void Game::CueHit()

@@ -64,6 +64,8 @@ public:
 	// Обработка статических коллизий двух шаров
 	void ProcessingStaticCollision(Ball& OtherBall);
 
+	void StaticColiderCollision(Rect<float>& colider);
+
 	void ColiderCollisison(Rect<float> &Colider);
 
 
