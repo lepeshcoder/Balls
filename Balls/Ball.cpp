@@ -115,9 +115,37 @@ void Ball::ProcessingStaticCollision(Ball& OtherBall)
 		OtherBall.Centre -= Delta;
 		BallSprite->setPosition(Centre);
 		OtherBall.BallSprite->setPosition(OtherBall.Centre);
+		DynamicCollision(OtherBall);
 	}
 	else return;
 }
+
+float Ball::GetSpeed()
+{
+	return Speed;
+}
+
+
+
+void Ball::DynamicCollision( Ball& other) 
+{
+	float u1x = other.Speed * cos(other.Angle * PI / 180);   // u1'(x) = u2(x) = u2 * cos(angle)
+	float u2x = Speed * cos(Angle * PI / 180);               // u2'(x) = u1(x) = u1 * cos(angle) 
+	float u1y = other.Speed * sin(other.Angle * PI / 180);   // u1'(y) = u2(y) = u2 * sin(Angle)
+	float u2y = Speed * sin(Angle * PI / 180);               // u2'(y) = u1(y) = u1 * sin(Angle)
+	float Angle1 = atan2f(u1y, u1x) * 180 / PI;                         // Angle1 = atan(u1'(y)/u1'(x))
+	float Angle2 = atan2f(u2y, u2x) * 180 / PI;                         // Angle2 = atan(u2'(u)/u2'(x))
+	float tempSpeed = other.Speed;
+	other.IsMove = true;
+	other.Speed = Speed;
+	Speed = tempSpeed;
+	Angle = Angle1;
+	other.Angle = Angle2;
+}
+
+
+
+
 
 
 void Ball::ChangeDir(float angle)

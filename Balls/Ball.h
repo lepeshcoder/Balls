@@ -61,26 +61,16 @@ public:
 	// Геттер Позиции центра
 	Vector2f GetCentre();
 
+	float GetSpeed();
+
 	// Обработка статических коллизий двух шаров ( ПОФИКСИТЬ)
 	void ProcessingStaticCollision(Ball& OtherBall);
 
-	void StaticColiderCollision(Rect<float>& colider);
-
+	// Обработка коллизий с колайдером
 	void ColiderCollisison(Rect<float> &Colider);
 
-
-
-	
-	
-
-	
-	
-
-
-
-
-
-
+	// Обработка динамических коллизий
+	void DynamicCollision(Ball& other);
 
 
 };

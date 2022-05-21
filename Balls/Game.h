@@ -72,5 +72,9 @@ public:
 
 	float GetCueHitDistance();
 
+	bool IsHitEnded();
+
+	void PerformDynamicCollision();
+
 };
 

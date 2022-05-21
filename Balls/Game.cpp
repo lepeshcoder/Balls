@@ -74,10 +74,10 @@ void Game::Initialize(std::string BallTexturePath)
 	deltaX = 2 * BALL_RADIUS * sin(PI/3); deltaY = 2 * BALL_RADIUS * cos(PI/3);
 
 	AddBall(Ball(Vector2f(650, 450), BALL_RADIUS, BallTexturePath));
-	/*AddBall(Ball(Vector2f(1050, 450), BALL_RADIUS, BallTexturePath));
+	AddBall(Ball(Vector2f(1050, 450), BALL_RADIUS, BallTexturePath));
 	AddBall(Ball(Vector2f(1050, 250), BALL_RADIUS, BallTexturePath));
-	AddBall(Ball(Vector2f(1050, 650), BALL_RADIUS, BallTexturePath));*/
-	for (int i = 1; i <= 5 ; i++)
+	AddBall(Ball(Vector2f(1050, 650), BALL_RADIUS, BallTexturePath));
+	/*for (int i = 1; i <= 5; i++)
 	{
 		Vector2f temp = Position + Vector2f((i - 1) * deltaX, (1 - i) * deltaY);
 		for (int j = 1; j <= i; j++)
@@ -85,18 +85,26 @@ void Game::Initialize(std::string BallTexturePath)
 			AddBall(Ball(temp, BALL_RADIUS, BallTexturePath));
 			temp.y += 2 * BALL_RADIUS;
 		}
-	}
+	}*/
 	MainBall = &Balls[0];
 	cue->SetPosition(MainBall->GetCentre());
 }
 
 void Game::Update(float time)
 {
+	if (IsHitEnded())
+	{
+		if (MainBall->GetCentre().x != 650)
+		{
+			cue->SetPosition(MainBall->GetCentre());
+		}
+	}
 	cue->Update(hitPowerPanel->GetCueHitDistance());  // Обновление позиции кия
 	for (auto& i : Balls) i.Update(time, FRICTION); // Обновление позиции шаров 
 	PerformColiderCollision(table->GetColider()); // Обработка коллизий с колайдером(столом)
 	PerformStaticCollisisons(); // Обработка статических коллизий между шариками
 	hitPowerPanel->Update(hitPowerPanel->GetCueHitDistance()); // Jбновление позиции Кия на панели силы удара
+	
 }
 
 void Game::CueHit()
@@ -156,4 +164,15 @@ void Game::SetCueHitDistance(float CueHitDistance)
 float Game::GetCueHitDistance()
 {
 	return hitPowerPanel->GetCueHitDistance();
+}
+
+bool Game::IsHitEnded()
+{
+	for (auto& i : Balls) if (i.GetSpeed()) return false;
+	return true;
+}
+
+void Game::PerformDynamicCollision()
+{
+	
 }
