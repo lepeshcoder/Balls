@@ -37,7 +37,7 @@ public:
 	// Изначальный угол равен 0 угол возрастает по часовой стрелке и ограничен от 0 до 360 градусов
 	void SetAngle(float Angle);
 
-	float GetAngle();
+	Vector2f GetAngle();
 
 	// Установка Кия бойком к заданной точке
 	void SetPosition(Vector2f Position);
@@ -54,5 +54,8 @@ public:
 	float GetHitPower();
 
 	void Hit();
+
+	// Делает спрайт невидимым
+	void Hide();
 
 };

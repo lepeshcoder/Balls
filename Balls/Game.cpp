@@ -6,6 +6,7 @@ Game::Game(sf::RenderWindow& window,std::string CueTexturePath, std::string Tabl
 	cue = new Cue(CueTexturePath);
 	table = new Table(TableTexturePath, window, FRICTION);
 	hitPowerPanel = new HitPowerPanel(HitPowerPanelTexturePath, HitPowerCueTexturePath);
+	MainBall = nullptr;
 }
 
 Game::~Game()
@@ -38,6 +39,7 @@ void Game::SetFriction(float Friction)
 void Game::SetCueAngle(float Angle)
 {
 	cue->SetAngle(Angle);
+	std::cout << cue->GetAngle().x <<" : " << cue->GetAngle().y << std::endl;
 }
 
 void Game::SetCueIsHit(bool IsHit)
@@ -92,29 +94,23 @@ void Game::Initialize(std::string BallTexturePath)
 
 void Game::Update(float time)
 {
-	if (IsHitEnded())
-	{
-		if (MainBall->GetCentre().x != 650)
-		{
-			cue->SetPosition(MainBall->GetCentre());
-		}
-	}
 	cue->Update(hitPowerPanel->GetCueHitDistance());  // Обновление позиции кия
 	for (auto& i : Balls) i.Update(time, FRICTION); // Обновление позиции шаров 
 	PerformColiderCollision(table->GetColider()); // Обработка коллизий с колайдером(столом)
 	PerformStaticCollisisons(); // Обработка статических коллизий между шариками
-	hitPowerPanel->Update(hitPowerPanel->GetCueHitDistance()); // Jбновление позиции Кия на панели силы удара
+	for (auto& i : Balls) i.UpdateCentre(); // Обновляем позиции спрайтов
+	hitPowerPanel->Update(hitPowerPanel->GetCueHitDistance()); // Обновление позиции Кия на панели силы удара
+	if (IsHitEnded()) cue->SetPosition(MainBall->GetCentre()); // Когда удар заканчивается устанавливаем кий к Главному шару
 	
 }
 
 void Game::CueHit()
 {
 	cue->Hit(); // Возвращение кия к шару
+	cue->Hide(); // Делает кий невидимым до конца удара
 	hitPowerPanel->ResetCuePosition(); // Возвращения кия на Панели силы удара в исходное положение
 	MainBall->SetSpeed(cue->GetHitPower()); // Задание начальной скорости Шару
-	MainBall->ChangeDir(360 - cue->GetAngle()); // Передача ему угла
-	MainBall->SetIsMove(true); // Установка флага на возможность двигаться
-	
+	MainBall->ChangeDir(cue->GetAngle()); // Передача ему угла
 }
 
 bool Game::IsHitPanelActive(Vector2f Point)
@@ -142,13 +138,6 @@ void Game::PerformStaticCollisisons()
 	for (auto& i : Balls)
 		for (auto& j : Balls)
 			if (&i != &j) i.ProcessingStaticCollision(j);
-	/*for (int i = 0; i < Balls.size(); i++)
-	{
-		for (int j = i + 1; j < Balls.size(); j++)
-		{
-			Balls[i].ProcessingStaticCollision(Balls[j]);
-		}
-	}*/
 }
 
 void Game::PerformColiderCollision(Rect<float> &Colider)

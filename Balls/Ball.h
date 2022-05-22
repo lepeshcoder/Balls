@@ -17,10 +17,7 @@ private:
 	float Speed;
 
 	// Угол движения шарика
-	float Angle;
-
-	// Флаг движения
-	bool IsMove;
+	Vector2f SpeedVector;
 
 	// Текстура шарика
 	Texture* BallTexture;
@@ -50,13 +47,10 @@ public:
 	void Update(float time, float friction);
 
 	// Смена направления
-	void ChangeDir(float angle);
+	void ChangeDir(Vector2f SpeedVector);
 
 	// Установка скорости
 	void SetSpeed(float Speed);
-
-	// Установка флага движения
-	void SetIsMove(bool IsMove);
 
 	// Геттер Позиции центра
 	Vector2f GetCentre();
@@ -71,6 +65,11 @@ public:
 
 	// Обработка динамических коллизий
 	void DynamicCollision(Ball& other);
+
+	void NormalizeSpeedVector();
+
+	// Выставляет спрайт в CENTRE
+	void UpdateCentre();
 
 
 };

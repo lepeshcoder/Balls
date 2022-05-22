@@ -6,8 +6,7 @@ Ball::Ball(Vector2f Centre, float Radius, std::string TexturePath)
 	this->Centre = Centre;
 	this->Radius = Radius;
 	Speed = 0;
-	Angle = 0;
-	IsMove = false;
+	SpeedVector = Vector2f(0, 0);
 	BallTexture = new Texture();
 	BallTexture->loadFromFile(TexturePath);
 	BallSprite = new Sprite();
@@ -24,10 +23,9 @@ Ball::Ball()
 	BallTexture = new Texture();
 	BallSprite = new Sprite();
 	Centre = Vector2f(0, 0);
-	IsMove = false;
 	Radius = 0;
 	Speed = 0;
-	Angle = 0;
+	SpeedVector = Vector2f(0, 0);
 }
 
 void Ball::Draw(sf::RenderWindow& window)
@@ -51,37 +49,22 @@ Ball::Ball(const Ball &other)
 	BallSprite->setPosition(other.Centre - Vector2f(other.Radius, other.Radius));
 	BallSprite->setScale(40 / 561.0, 40 / 561.0);
 	Centre = other.Centre;
-	IsMove = other.IsMove;
 	Radius = other.Radius;
-	Angle = other.Angle;
+	SpeedVector = other.SpeedVector;
 	Speed = other.Speed;
 }
 
 void Ball::Update(float time,float friction)
 {
-	if (IsMove)
-	{
-		float dx = cos(Angle * PI / 180) * Speed * time;
-		float dy = -sin(Angle * PI / 180) * Speed * time;
-		Centre += Vector2f(dx, dy);
-		BallSprite->move(Vector2f(dx,dy));
-		if (Speed > friction) Speed -= friction * time;
-		else
-		{
-			Speed = 0;
-			IsMove = false;
-		}
-	}
+	Vector2f Delta = SpeedVector * Speed * time;
+	Centre += Delta;																																														
+	if (Speed > friction) Speed -= friction * time;
+	else Speed = 0;
 }
 
 void Ball::SetSpeed(float Speed)
 {
 	this->Speed = Speed;
-}
-
-void Ball::SetIsMove(bool IsMove)
-{
-	this->IsMove = IsMove;
 }
 
 Vector2f Ball::GetCentre()
@@ -91,33 +74,21 @@ Vector2f Ball::GetCentre()
 
 void Ball::ProcessingStaticCollision(Ball& OtherBall)
 {
-	// Расстояние между центрами шаров
-	float distance = sqrt(pow(Centre.x - OtherBall.Centre.x, 2) + pow(Centre.y - OtherBall.Centre.y, 2)); 
-	if (distance + 0.001 < Radius + OtherBall.Radius) // Если произошло наложение
+	float distance = sqrt(pow(Centre.x - OtherBall.Centre.x, 2) + pow(Centre.y - OtherBall.Centre.y, 2)); // Расстояние между центрами шаров
+	if (distance < Radius + OtherBall.Radius) // Если произошло наложение
 	{
-		float temp = (Radius + OtherBall.Radius - distance); // Расстояние наложения
-		float DeltaX = temp * abs(Centre.x - OtherBall.Centre.x) / (2 * distance);
-		float DeltaY = temp * abs(Centre.y - OtherBall.Centre.y) / (2 * distance);
-		Vector2f Delta;
-		if (Centre.x < OtherBall.Centre.x)
-		{
-			Delta.x = -DeltaX;
-			if (Centre.y < OtherBall.Centre.y)Delta.y = -DeltaY;
-			else Delta.y = DeltaY;
-		}
-		else
-		{
-			Delta.x = DeltaX;
-			if (Centre.y < OtherBall.Centre.y) Delta.y = -DeltaY;
-			else Delta.y = DeltaY;
-		}
-		Centre += Delta;
-		OtherBall.Centre -= Delta;
-		BallSprite->setPosition(Centre);
-		OtherBall.BallSprite->setPosition(OtherBall.Centre);
+		float temp = (distance - Radius - OtherBall.Radius) / 2; // Расстояние наложения пополам
+		Centre -= Vector2f(Centre.x - OtherBall.Centre.x, Centre.y - OtherBall.Centre.y) * temp / distance;
+		OtherBall.Centre += Vector2f(Centre.x - OtherBall.Centre.x, Centre.y - OtherBall.Centre.y) * temp / distance;
 		DynamicCollision(OtherBall);
 	}
 	else return;
+}
+
+void Ball::NormalizeSpeedVector()
+{
+	float modul = sqrt(pow(SpeedVector.x, 2) + pow(SpeedVector.y, 2));
+	SpeedVector /= modul;
 }
 
 float Ball::GetSpeed()
@@ -125,22 +96,27 @@ float Ball::GetSpeed()
 	return Speed;
 }
 
-
-
-void Ball::DynamicCollision( Ball& other) 
+void Ball::UpdateCentre()
 {
-	float u1x = other.Speed * cos(other.Angle * PI / 180);   // u1'(x) = u2(x) = u2 * cos(angle)
-	float u2x = Speed * cos(Angle * PI / 180);               // u2'(x) = u1(x) = u1 * cos(angle) 
-	float u1y = other.Speed * sin(other.Angle * PI / 180);   // u1'(y) = u2(y) = u2 * sin(Angle)
-	float u2y = Speed * sin(Angle * PI / 180);               // u2'(y) = u1(y) = u1 * sin(Angle)
-	float Angle1 = atan2f(u1y, u1x) * 180 / PI;                         // Angle1 = atan(u1'(y)/u1'(x))
-	float Angle2 = atan2f(u2y, u2x) * 180 / PI;                         // Angle2 = atan(u2'(u)/u2'(x))
-	float tempSpeed = other.Speed;
-	other.IsMove = true;
+	BallSprite->setPosition(Centre);
+}
+
+
+
+void Ball::DynamicCollision(Ball& other) 
+{
+	float u1x = SpeedVector.x * Speed;
+	float u1y = SpeedVector.y * Speed;
+	float u2x = SpeedVector.x * Speed;
+	float u2y = SpeedVector.x * Speed;
+	float U1x = u1x * u2x / (u1x + u2x);
+	float U1y = u1y * u2y / (u1y + u2y);
+	float U2x = u1x + u2x - U1x;
+	float U2y = u1y + u2y - U1y;
+	ChangeDir(Vector2f(U1x, U1y));
+	other.ChangeDir(Vector2f(U2x, U2y));
+	Speed /= 2;
 	other.Speed = Speed;
-	Speed = tempSpeed;
-	Angle = Angle1;
-	other.Angle = Angle2;
 }
 
 
@@ -148,12 +124,10 @@ void Ball::DynamicCollision( Ball& other)
 
 
 
-void Ball::ChangeDir(float angle)
+void Ball::ChangeDir(Vector2f SpeedVector)
 { 
-	this->Angle = angle;
-	if (Angle > 359) Angle -= 360;
-	if (Angle < 0) Angle += 360;
-	//std::cout << "Переданый угол шару от Кия: " << Angle << std::endl;
+	this->SpeedVector = SpeedVector;
+	NormalizeSpeedVector();
 }
 
 void Ball::ColiderCollisison(Rect<float> &Colider)
@@ -161,31 +135,29 @@ void Ball::ColiderCollisison(Rect<float> &Colider)
 	if (Centre.x - Radius < Colider.left)
 	{
 		Centre.x = Colider.left + Radius;
-		BallSprite->setPosition(Centre);
-		ChangeDir(180 - Angle);
+		SpeedVector.x *= -1;
 		Speed *= 0.8;
+
 	}
 	else if (Centre.x + Radius > Colider.left + Colider.width)
 	{
 		Centre.x = Colider.left + Colider.width - Radius;
-		BallSprite->setPosition(Centre);
-		ChangeDir(180 - Angle);
+		SpeedVector.x *= -1;
 		Speed *= 0.8;
 	}
 	else if (Centre.y - Radius < Colider.top)
 	{
 		Centre.y = Colider.top + Radius;
-		BallSprite->setPosition(Centre);
-		ChangeDir(360 - Angle);
+		SpeedVector.y *= -1;
 		Speed *= 0.8;
 	}
 	else if (Centre.y + Radius > Colider.top + Colider.height)
 	{
 		Centre.y = Colider.top + Colider.height - Radius;
-		BallSprite->setPosition(Centre);
-		ChangeDir(360 - Angle);
+		SpeedVector.y *= -1;
 		Speed *= 0.8;
 	}
+
 }
 
 

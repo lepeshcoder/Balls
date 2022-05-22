@@ -42,14 +42,14 @@ void Cue::SetAngle(float Angle)
 	CueSprite->setRotation(angle);
 }
 
-float Cue::GetAngle()
+Vector2f Cue::GetAngle()
 {
-	return angle;
+	return Vector2f(cos(angle * PI / 180), sin(angle * PI / 180));
 }
 
 void Cue::SetPosition(Vector2f Position)
 {
-	CueSprite->setPosition(Position);	
+	CueSprite->setPosition(Position+Vector2f(BALL_RADIUS,BALL_RADIUS));	
 	this->Position = Position;
 }
 
@@ -85,4 +85,9 @@ float Cue::GetHitPower()
 void Cue::Hit()
 {
 	CueSprite->setOrigin(CueTexture->getSize().x + BALL_RADIUS + 1, CueTexture->getSize().y / 2.0);
+}
+
+void Cue::Hide()
+{
+	CueSprite->setPosition(10000, 10000);
 }
