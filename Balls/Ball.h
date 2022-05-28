@@ -58,7 +58,7 @@ public:
 	float GetSpeed();
 
 	// Обработка статических коллизий двух шаров ( ПОФИКСИТЬ)
-	void ProcessingStaticCollision(Ball& OtherBall);
+	bool ProcessingStaticCollision(Ball& OtherBall);
 
 	// Обработка коллизий с колайдером
 	void ColiderCollisison(Rect<float> &Colider);
@@ -71,5 +71,6 @@ public:
 	// Выставляет спрайт в CENTRE
 	void UpdateCentre();
 
+	void SetPosition(Vector2f Position);
 
 };

@@ -25,6 +25,8 @@ int main()
 
     Game Game(window,CueTexturePath,TableTexturePath,BallTexturePath, HitPowerPanelTexturePath, HitPowerCueTexturePath);
     Game.Initialize(BallTexturePath);
+    
+    s
 
     
     Clock clock;
@@ -36,7 +38,6 @@ int main()
 
     while (window.isOpen())
     {
-       
         float time = clock.getElapsedTime().asMicroseconds();
         clock.restart();
         time /= GAME_SPEED;
@@ -61,6 +62,9 @@ int main()
             Game.SetCueAngle(angle);
             angle -= speed;
         }
+
+        
+
         
         if (Mouse::isButtonPressed(Mouse::Button::Left))
         {
@@ -72,11 +76,16 @@ int main()
                 Game.SetCueHitDistance(MousePosition.y - Game.GetHitPowerPanelTopPoint());
                 Game.SetCueHitPower(Game.GetCueHitDistance() / Game.GetHitPowerPanelHeight() * MAX_CUE_POWER);
             }
+            else
+            {
+                Game.GetMainBall()->SetPosition(Vector2f(MousePosition.x,MousePosition.y));
+            }
         }
 
 
         if (Keyboard::isKeyPressed(Keyboard::Space))
         {
+            Game.GameState = HIT_PHASE;
             Game.CueHit();
         }
 
@@ -86,6 +95,8 @@ int main()
         Game.Draw(window);
         window.display();
 
+        //sleep(sleeptime);
+      
     }
 
     return 0;

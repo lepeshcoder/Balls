@@ -39,7 +39,6 @@ void Game::SetFriction(float Friction)
 void Game::SetCueAngle(float Angle)
 {
 	cue->SetAngle(Angle);
-	std::cout << cue->GetAngle().x <<" : " << cue->GetAngle().y << std::endl;
 }
 
 void Game::SetCueIsHit(bool IsHit)
@@ -76,10 +75,10 @@ void Game::Initialize(std::string BallTexturePath)
 	deltaX = 2 * BALL_RADIUS * sin(PI/3); deltaY = 2 * BALL_RADIUS * cos(PI/3);
 
 	AddBall(Ball(Vector2f(650, 450), BALL_RADIUS, BallTexturePath));
-	AddBall(Ball(Vector2f(1050, 450), BALL_RADIUS, BallTexturePath));
+	/*AddBall(Ball(Vector2f(1050, 450), BALL_RADIUS, BallTexturePath));
 	AddBall(Ball(Vector2f(1050, 250), BALL_RADIUS, BallTexturePath));
-	AddBall(Ball(Vector2f(1050, 650), BALL_RADIUS, BallTexturePath));
-	/*for (int i = 1; i <= 5; i++)
+	AddBall(Ball(Vector2f(1050, 650), BALL_RADIUS, BallTexturePath));*/
+	for (int i = 1; i <= 5; i++)
 	{
 		Vector2f temp = Position + Vector2f((i - 1) * deltaX, (1 - i) * deltaY);
 		for (int j = 1; j <= i; j++)
@@ -87,7 +86,7 @@ void Game::Initialize(std::string BallTexturePath)
 			AddBall(Ball(temp, BALL_RADIUS, BallTexturePath));
 			temp.y += 2 * BALL_RADIUS;
 		}
-	}*/
+	}
 	MainBall = &Balls[0];
 	cue->SetPosition(MainBall->GetCentre());
 }
@@ -98,6 +97,7 @@ void Game::Update(float time)
 	for (auto& i : Balls) i.Update(time, FRICTION); // Обновление позиции шаров 
 	PerformColiderCollision(table->GetColider()); // Обработка коллизий с колайдером(столом)
 	PerformStaticCollisisons(); // Обработка статических коллизий между шариками
+	PerformDynamicCollision(); // Обработка динамических коллизий
 	for (auto& i : Balls) i.UpdateCentre(); // Обновляем позиции спрайтов
 	hitPowerPanel->Update(hitPowerPanel->GetCueHitDistance()); // Обновление позиции Кия на панели силы удара
 	if (IsHitEnded()) cue->SetPosition(MainBall->GetCentre()); // Когда удар заканчивается устанавливаем кий к Главному шару
@@ -135,9 +135,10 @@ void Game::SetHitPowerPanelIsUpdate(bool IsUpdate)
 
 void Game::PerformStaticCollisisons()
 {
-	for (auto& i : Balls)
-		for (auto& j : Balls)
-			if (&i != &j) i.ProcessingStaticCollision(j);
+	for (int i = 0; i < Balls.size(); i++)
+		for (int j = i + 1; j < Balls.size(); j++)
+			if (Balls[i].ProcessingStaticCollision(Balls[j]))
+				CollissionPairs.push_back(std::make_pair(&Balls[i], &Balls[j]));
 }
 
 void Game::PerformColiderCollision(Rect<float> &Colider)
@@ -163,5 +164,11 @@ bool Game::IsHitEnded()
 
 void Game::PerformDynamicCollision()
 {
-	
+	for (auto& i : CollissionPairs) i.first->DynamicCollision(*(i.second));
+	CollissionPairs.clear();
+}
+
+Ball* Game::GetMainBall()
+{
+	return MainBall;
 }

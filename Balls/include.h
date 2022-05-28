@@ -1,12 +1,13 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include<SFML/Audio.hpp>
+#include <SFML/Audio.hpp>
+#include <SFML/Network.hpp>
 
-#include<vector>
-#include<stack>
-#include<fstream>
-#include<iostream>
-#include<cmath>
+#include <vector>
+#include <stack>
+#include <fstream>
+#include <iostream>
+#include <cmath>
 
 using namespace sf;
 
@@ -20,8 +21,8 @@ const double PI = 3.141592653589793;
 
 enum GameStates
 {
-	
-	START = 0
+
+	START = 0, PLAYER1_HIT, PLAYER2_HIT, HIT_PHASE, END
 };
 
 

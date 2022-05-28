@@ -72,23 +72,24 @@ Vector2f Ball::GetCentre()
 	return Centre;
 }
 
-void Ball::ProcessingStaticCollision(Ball& OtherBall)
+bool Ball::ProcessingStaticCollision(Ball& OtherBall)
 {
 	float distance = sqrt(pow(Centre.x - OtherBall.Centre.x, 2) + pow(Centre.y - OtherBall.Centre.y, 2)); // Расстояние между центрами шаров
-	if (distance < Radius + OtherBall.Radius) // Если произошло наложение
+	if (distance + 0.001 < Radius + OtherBall.Radius) // Если произошло наложение
 	{
 		float temp = (distance - Radius - OtherBall.Radius) / 2; // Расстояние наложения пополам
 		Centre -= Vector2f(Centre.x - OtherBall.Centre.x, Centre.y - OtherBall.Centre.y) * temp / distance;
 		OtherBall.Centre += Vector2f(Centre.x - OtherBall.Centre.x, Centre.y - OtherBall.Centre.y) * temp / distance;
-		DynamicCollision(OtherBall);
+		//std::cout << "Произошла статическая коллизия шариков" << this << " : " << &OtherBall << std::endl;
+		return true;
 	}
-	else return;
+	else return false;
 }
 
 void Ball::NormalizeSpeedVector()
 {
 	float modul = sqrt(pow(SpeedVector.x, 2) + pow(SpeedVector.y, 2));
-	SpeedVector /= modul;
+	if (modul != 0) SpeedVector /= modul;
 }
 
 float Ball::GetSpeed()
@@ -103,21 +104,44 @@ void Ball::UpdateCentre()
 
 
 
-void Ball::DynamicCollision(Ball& other) 
+void Ball::DynamicCollision(Ball& other)
 {
-	float u1x = SpeedVector.x * Speed;
-	float u1y = SpeedVector.y * Speed;
-	float u2x = SpeedVector.x * Speed;
-	float u2y = SpeedVector.x * Speed;
-	float U1x = u1x * u2x / (u1x + u2x);
-	float U1y = u1y * u2y / (u1y + u2y);
-	float U2x = u1x + u2x - U1x;
-	float U2y = u1y + u2y - U1y;
-	ChangeDir(Vector2f(U1x, U1y));
-	other.ChangeDir(Vector2f(U2x, U2y));
-	Speed /= 2;
-	other.Speed = Speed;
+	float distance = 2 * BALL_RADIUS;
+	Vector2f normal = (Centre - other.Centre) / distance;
+	Vector2f tangent = Vector2f(-normal.y, normal.x);
+
+	Speed *= 0.8;
+	other.Speed *= 0.8;
+
+	float v1x = SpeedVector.x * Speed, v1y = SpeedVector.y * Speed;
+	float v2x = other.SpeedVector.x * other.Speed, v2y = other.SpeedVector.y * other.Speed;
+
+	float dptan1 = v1x * tangent.x + v1y * tangent.y;
+	float dptan2 = v2x * tangent.x + v2y * tangent.y;
+
+	float dpnorm1 = v1x * normal.x + v1y * normal.y;
+	float dpnorm2 = v2x * normal.x + v2y * normal.y;
+
+	float V1x = tangent.x * dptan1 + normal.x * other.Speed;
+	float V1y = tangent.y * dptan1 + normal.y * other.Speed;
+	float V2x = tangent.x * dptan2 + normal.x * Speed;
+	float V2y = tangent.y * dptan2 + normal.y * Speed;
+
+	ChangeDir(Vector2f(V1x, V1y)); 
+	other.ChangeDir(Vector2f(-V2x, -V2y));
+
+	Speed = sqrt(V1x * V1x + V1y * V1y);
+	other.Speed = sqrt(V2x * V2x + V2y * V2y);
+
+
+   //std::cout << "Произошла Динамическая коллизия шариков" << this << " : " << &other << std::endl;
 }
+
+void Ball::SetPosition(Vector2f Position)
+{
+	Centre = Position;
+}
+
 
 
 
@@ -128,7 +152,7 @@ void Ball::ChangeDir(Vector2f SpeedVector)
 { 
 	this->SpeedVector = SpeedVector;
 	NormalizeSpeedVector();
-}
+} 
 
 void Ball::ColiderCollisison(Rect<float> &Colider)
 {

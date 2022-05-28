@@ -17,12 +17,14 @@ private:
 
 	Cue* cue;
 
-	GameStates GameState;
-
 	HitPowerPanel* hitPowerPanel;
+
+	std::vector<std::pair<Ball*, Ball*>> CollissionPairs;
 
 	
 public:
+
+	GameStates GameState;
 
 	Game(sf::RenderWindow& window, std::string CueTexturePath, std::string TableTexturePath, std::string MainBallTexturePath, std::string HitPowerPanelTexturePath, std::string HitPowerCueTexturePath);
 
@@ -75,6 +77,8 @@ public:
 	bool IsHitEnded();
 
 	void PerformDynamicCollision();
+
+	Ball* GetMainBall();
 
 };
 
