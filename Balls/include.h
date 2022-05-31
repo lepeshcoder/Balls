@@ -13,16 +13,20 @@ using namespace sf;
 
 #define GAME_SPEED 800
 #define BALL_RADIUS 20
-#define FRICTION 0.0002
+#define FRICTION 0.0001
 #define MAX_CUE_POWER 2
+#define LINE std::pair<Vector2f,Vector2f>
 
 
 const double PI = 3.141592653589793;
 
 enum GameStates
 {
+	START = 0, CONNECT, PREPARE, HIT_PHASE, MAINBALL_RESET, END
+};
 
-	START = 0, PLAYER1_HIT, PLAYER2_HIT, HIT_PHASE, END
+enum Hit {
+	MY_HIT = 0, OPPONENT_HIT,
 };
 
 

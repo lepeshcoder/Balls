@@ -61,7 +61,7 @@ public:
 	bool ProcessingStaticCollision(Ball& OtherBall);
 
 	// ќбработка коллизий с колайдером
-	void ColiderCollisison(Rect<float> &Colider);
+	void ColiderCollisison(std::vector<LINE> &Colider);
 
 	// ќбработка динамических коллизий
 	void DynamicCollision(Ball& other);
@@ -72,5 +72,8 @@ public:
 	void UpdateCentre();
 
 	void SetPosition(Vector2f Position);
+
+	// ѕр€чет м€ч
+	void Hide();
 
 };

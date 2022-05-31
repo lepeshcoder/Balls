@@ -49,7 +49,7 @@ Vector2f Cue::GetAngle()
 
 void Cue::SetPosition(Vector2f Position)
 {
-	CueSprite->setPosition(Position+Vector2f(BALL_RADIUS,BALL_RADIUS));	
+	CueSprite->setPosition(Position);	
 	this->Position = Position;
 }
 

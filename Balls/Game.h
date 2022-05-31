@@ -21,10 +21,23 @@ private:
 
 	std::vector<std::pair<Ball*, Ball*>> CollissionPairs;
 
+	int MyScore, OpponentScore;
+
+	IpAddress RemoteIp;
+
+	unsigned short RemotePort;
+
+	UdpSocket Socket;
+
+
+
 	
 public:
 
 	GameStates GameState;
+	
+	// Очередь
+	Hit Hit;
 
 	Game(sf::RenderWindow& window, std::string CueTexturePath, std::string TableTexturePath, std::string MainBallTexturePath, std::string HitPowerPanelTexturePath, std::string HitPowerCueTexturePath);
 
@@ -51,7 +64,7 @@ public:
 	std::vector<Vector2f> GetBallsCentres();
 
 	// Инициализция Игры
-	void Initialize(std::string BallTexturePath);
+	void Initialize(std::string BallTexturePath, std::string MainBallTexturePath);
 
 	// Обновление Игры
 	void Update(float time);
@@ -68,7 +81,7 @@ public:
 
 	void PerformStaticCollisisons();
 
-	void PerformColiderCollision(Rect<float> &Colider);
+	void PerformColiderCollision(std::vector<LINE> &Colider);
 
 	void SetCueHitDistance(float CueHitDistance);
 
@@ -80,5 +93,14 @@ public:
 
 	Ball* GetMainBall();
 
+	bool IsBallInPocket(Ball& ball);
+
+	void CheckBallsInPockets();
+
+	void Connect();
+
+	void SendData(sf::Packet& packet);
+
+	Packet ReceiveData();
 };
 

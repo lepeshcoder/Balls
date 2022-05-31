@@ -12,7 +12,7 @@ Ball::Ball(Vector2f Centre, float Radius, std::string TexturePath)
 	BallSprite = new Sprite();
 	BallSprite->setTexture(*BallTexture);
 	BallSprite->setPosition(Centre - Vector2f(Radius,Radius));
-	BallSprite->setScale(40 / 561.0, 40 / 561.0);
+	BallSprite->setScale(40 / BallTexture->getSize().x, 40 / BallTexture->getSize().y);
 }
 
 
@@ -99,7 +99,7 @@ float Ball::GetSpeed()
 
 void Ball::UpdateCentre()
 {
-	BallSprite->setPosition(Centre);
+	BallSprite->setPosition(Centre - Vector2f(BALL_RADIUS,BALL_RADIUS));
 }
 
 
@@ -139,7 +139,12 @@ void Ball::DynamicCollision(Ball& other)
 
 void Ball::SetPosition(Vector2f Position)
 {
-	Centre = Position;
+	Centre = Position + Vector2f(BALL_RADIUS,BALL_RADIUS);
+}
+
+void Ball::Hide()
+{
+	Centre = Vector2f(10000, 10000);
 }
 
 
@@ -154,34 +159,46 @@ void Ball::ChangeDir(Vector2f SpeedVector)
 	NormalizeSpeedVector();
 } 
 
-void Ball::ColiderCollisison(Rect<float> &Colider)
+void Ball::ColiderCollisison(std::vector<LINE> &Colider)
 {
-	if (Centre.x - Radius < Colider.left)
+	if (Centre.x - Radius < Colider[5].first.x)
 	{
-		Centre.x = Colider.left + Radius;
-		SpeedVector.x *= -1;
-		Speed *= 0.8;
-
+		if (Centre.y + Radius/4.0 >= Colider[5].first.y && Centre.y - Radius/4.0 <= Colider[5].second.y)
+		{
+			Centre.x = Colider[5].first.x + Radius;
+			SpeedVector.x *= -1;
+			Speed *= 0.8;
+		}
 	}
-	else if (Centre.x + Radius > Colider.left + Colider.width)
+	else if (Centre.x + Radius > Colider[2].first.x)
 	{
-		Centre.x = Colider.left + Colider.width - Radius;
-		SpeedVector.x *= -1;
-		Speed *= 0.8;
+		if (Centre.y + Radius/4.0 >= Colider[2].first.y && Centre.y - Radius/4.0 <= Colider[2].second.y)
+		{
+			Centre.x = Colider[2].first.x - Radius;
+			SpeedVector.x *= -1;
+			Speed *= 0.8;
+		}
 	}
-	else if (Centre.y - Radius < Colider.top)
+	else if (Centre.y - Radius < Colider[0].first.y)
 	{
-		Centre.y = Colider.top + Radius;
-		SpeedVector.y *= -1;
-		Speed *= 0.8;
+		if (Centre.x + Radius / 4.0 >= Colider[0].first.x && Centre.x - Radius / 4.0 <= Colider[0].second.x ||
+			Centre.x + Radius / 4.0 >= Colider[1].first.x && Centre.x - Radius / 4.0 <= Colider[1].second.x)
+		{
+			Centre.y = Colider[0].first.y + Radius;
+			SpeedVector.y *= -1;
+			Speed *= 0.8;
+		}
 	}
-	else if (Centre.y + Radius > Colider.top + Colider.height)
+	else if (Centre.y + Radius > Colider[3].first.y)
 	{
-		Centre.y = Colider.top + Colider.height - Radius;
-		SpeedVector.y *= -1;
-		Speed *= 0.8;
+		if (Centre.x + Radius / 4.0 >= Colider[3].first.x && Centre.x - Radius / 4.0 <= Colider[3].second.x ||
+			Centre.x + Radius / 4.0 >= Colider[4].first.x && Centre.x - Radius / 4.0 <= Colider[4].second.x)
+		{
+			Centre.y = Colider[3].first.y - Radius;
+			SpeedVector.y *= -1;
+			Speed *= 0.8;
+		}
 	}
-
 }
 
 

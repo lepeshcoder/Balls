@@ -11,8 +11,9 @@ private:
 
 	float Friction;
 
-	Rect<float> Colider;
+	std::vector<Vector2f> pockets;
 
+	std::vector<LINE> colider;
 
 public:
 
@@ -24,7 +25,9 @@ public:
 
 	void SetFriction(float Friction);
 
-	 Rect<float>& GetColider();
+	std::vector<LINE>& GetColider();
+
+	bool IsBallInPockets(Vector2f BallCentre);
 	
 	~Table();
 
