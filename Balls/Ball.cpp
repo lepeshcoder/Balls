@@ -12,7 +12,7 @@ Ball::Ball(Vector2f Centre, float Radius, std::string TexturePath)
 	BallSprite = new Sprite();
 	BallSprite->setTexture(*BallTexture);
 	BallSprite->setPosition(Centre - Vector2f(Radius,Radius));
-	BallSprite->setScale(40 / BallTexture->getSize().x, 40 / BallTexture->getSize().y);
+	BallSprite->setScale(40.0 / BallTexture->getSize().x, 40.0 / BallTexture->getSize().y);
 }
 
 
@@ -47,7 +47,7 @@ Ball::Ball(const Ball &other)
 	BallSprite = new Sprite();
 	BallSprite->setTexture(*BallTexture);
 	BallSprite->setPosition(other.Centre - Vector2f(other.Radius, other.Radius));
-	BallSprite->setScale(40 / 561.0, 40 / 561.0);
+	BallSprite->setScale(40.0 / BallTexture->getSize().x, 40.0 / BallTexture->getSize().y);
 	Centre = other.Centre;
 	Radius = other.Radius;
 	SpeedVector = other.SpeedVector;

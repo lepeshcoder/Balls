@@ -23,18 +23,25 @@ private:
 
 	int MyScore, OpponentScore;
 
-	IpAddress RemoteIp;
-
-	unsigned short RemotePort;
-
-	UdpSocket Socket;
-
-
+	
 
 	
+
+	int Ballsleft;
+
+	Text MyScoreText, OpponentScoreText;
+
+	Font TextFont;
+
 public:
 
 	GameStates GameState;
+
+	IpAddress RemoteIp;
+
+	UdpSocket Socket;
+
+	unsigned short RemotePort;
 	
 	// Очередь
 	Hit Hit;
@@ -102,5 +109,17 @@ public:
 	void SendData(sf::Packet& packet);
 
 	Packet ReceiveData();
+
+	void RotateCue(Direction dir);
+
+	void CueSpeedUp();
+	
+	void CueSpeedDown();
+
+	float GetCueAngle();
+
+	void SetCueAngleSpeed(float speed);
+
+	UdpSocket& GetSocket();
 };
 

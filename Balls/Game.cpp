@@ -8,6 +8,17 @@ Game::Game(sf::RenderWindow& window,std::string CueTexturePath, std::string Tabl
 	hitPowerPanel = new HitPowerPanel(HitPowerPanelTexturePath, HitPowerCueTexturePath);
 	MainBall = nullptr;
 	MyScore = OpponentScore = 0;
+	Ballsleft = 15;
+	TextFont.loadFromFile("..\\Fonts\\impact2.ttf");
+	MyScoreText.setFont(TextFont);
+	MyScoreText.setString("My Score: " + std::to_string(MyScore));
+	MyScoreText.setPosition(400, 10);
+	MyScoreText.setFillColor(Color::Red);
+	OpponentScoreText.setFont(TextFont);
+	OpponentScoreText.setString("Opponent Score: " + std::to_string(OpponentScore));
+	OpponentScoreText.setPosition(1000, 10);
+	OpponentScoreText.setFillColor(Color::Red);
+
 }
 
 Game::~Game()
@@ -25,6 +36,8 @@ void Game::Draw(sf::RenderWindow& window)
 	for (auto& i : Balls) i.Draw(window);
 	cue->Draw(window);
 	hitPowerPanel->Draw(window);
+	window.draw(MyScoreText);
+	window.draw(OpponentScoreText);
 }
 
 void Game::AddBall(Ball ball)
@@ -75,10 +88,7 @@ void Game::Initialize(std::string BallTexturePath, std::string MainBallTexturePa
 	float deltaX, deltaY;
 	deltaX = 2 * BALL_RADIUS * sin(PI/3); deltaY = 2 * BALL_RADIUS * cos(PI/3);
 
-	AddBall(Ball(Vector2f(650, 450), BALL_RADIUS, MainBallTexturePath));
-	/*AddBall(Ball(Vector2f(1050, 450), BALL_RADIUS, BallTexturePath));
-	AddBall(Ball(Vector2f(1050, 250), BALL_RADIUS, BallTexturePath));
-	AddBall(Ball(Vector2f(1050, 650), BALL_RADIUS, BallTexturePath));*/
+	AddBall(Ball(Vector2f(650, 450), BALL_RADIUS, MainBallTexturePath));				// Главный мяч
 	for (int i = 1; i <= 5; i++)
 	{
 		Vector2f temp = Position + Vector2f((i - 1) * deltaX, (1 - i) * deltaY);
@@ -94,23 +104,65 @@ void Game::Initialize(std::string BallTexturePath, std::string MainBallTexturePa
 
 void Game::Update(float time)
 {
-	cue->Update(hitPowerPanel->GetCueHitDistance());				 // Обновление позиции кия
-	for (auto& i : Balls) i.Update(time, FRICTION);					 // Обновление позиции шаров 
-	CheckBallsInPockets();											 // Проверка на попадания мячиков в лузы
-	PerformColiderCollision(table->GetColider());					 // Обработка коллизий с колайдером(столом)
-	PerformStaticCollisisons();										 // Обработка статических коллизий между шариками
-	PerformDynamicCollision();										 // Обработка динамических коллизий
-	for (auto& i : Balls) i.UpdateCentre();							 // Обновляем позиции спрайтов
-	hitPowerPanel->Update(hitPowerPanel->GetCueHitDistance());		 // Обновление позиции Кия на панели силы удара
-	if (IsHitEnded())												 // Когда удар заканчивается 
+	switch (Hit)
 	{
-		cue->SetPosition(MainBall->GetCentre());					 // Устанавливаем кий к главному шару
-		if (GameState == HIT_PHASE)
+		case MY_HIT:
 		{
-			Hit = ((Hit == MY_HIT) ? OPPONENT_HIT : MY_HIT);		 // Передаем очередь хода		
-			GameState = PREPARE;                                     // Устанавливаем подготовку
-		}	
+			cue->Update(hitPowerPanel->GetCueHitDistance());				 // Обновление позиции кия
+			for (auto& i : Balls) i.Update(time, FRICTION);					 // Обновление позиции шаров 
+			CheckBallsInPockets();											 // Проверка на попадания мячиков в лузы
+			PerformColiderCollision(table->GetColider());					 // Обработка коллизий с колайдером(столом)
+			PerformStaticCollisisons();										 // Обработка статических коллизий между шариками
+			PerformDynamicCollision();										 // Обработка динамических коллизий
+			for (auto& i : Balls) i.UpdateCentre();							 // Обновляем позиции спрайтов
+			hitPowerPanel->Update(hitPowerPanel->GetCueHitDistance());		 // Обновление позиции Кия на панели силы удара
+			if (IsHitEnded())												 // Когда удар заканчивается 
+			{
+				cue->SetPosition(MainBall->GetCentre());					 // Устанавливаем кий к главному шару
+				if (GameState == HIT_PHASE)
+				{
+					Hit = ((Hit == MY_HIT) ? OPPONENT_HIT : MY_HIT);		 // Передаем очередь хода		
+					GameState = PREPARE;                                     // Устанавливаем подготовку
+				}
+			}
+			break;
+		}
+		case OPPONENT_HIT:
+		{
+			Packet packet;
+			IpAddress IP; unsigned short port;
+			Socket.receive(packet, IP, port);
+			
+			float* begin = (float*) (((unsigned char*)packet.getData()) + sizeof(unsigned char));
+			float angle = begin[0];
+			float distance = begin[1];
+			float speed = begin[2];
+
+			cue->SetAngle(angle);
+			cue->SetSpeed(speed);
+			cue->Update(distance);				 // Обновление позиции кия
+			for (auto& i : Balls) i.Update(time, FRICTION);					 // Обновление позиции шаров 
+			CheckBallsInPockets();											 // Проверка на попадания мячиков в лузы
+			PerformColiderCollision(table->GetColider());					 // Обработка коллизий с колайдером(столом)
+			PerformStaticCollisisons();										 // Обработка статических коллизий между шариками
+			PerformDynamicCollision();										 // Обработка динамических коллизий
+			for (auto& i : Balls) i.UpdateCentre();							 // Обновляем позиции спрайтов
+			hitPowerPanel->Update(distance);		 // Обновление позиции Кия на панели силы удара
+			if (IsHitEnded())												 // Когда удар заканчивается 
+			{
+				cue->SetPosition(MainBall->GetCentre());					 // Устанавливаем кий к главному шару
+				if (GameState == HIT_PHASE)
+				{
+					Hit = ((Hit == MY_HIT) ? OPPONENT_HIT : MY_HIT);		 // Передаем очередь хода		
+					GameState = PREPARE;                                     // Устанавливаем подготовку
+				}
+			}
+			
+			break;
+		}
 	}
+	
+
 	std::cout << "Gamestate: " << GameState << "  Hit: " << Hit << "  score: " << MyScore << " : " << OpponentScore << std::endl;
 }
 
@@ -204,13 +256,18 @@ void Game::CheckBallsInPockets()
 			{
 				(GameState == MY_HIT) ? MyScore = 0 : OpponentScore = 0;
 				GameState = MAINBALL_RESET;
+				Ballsleft--;
 			}
 		}
 	}
+	MyScoreText.setString("My Score: " + std::to_string(MyScore));
+	OpponentScoreText.setString("Opponent Score: " + std::to_string(OpponentScore));
+	if (Ballsleft == 0) GameState = END;
 }
 
 void Game::Connect()
 {
+
 	GameState = CONNECT;
 	
 	unsigned short LocalPort;
@@ -219,8 +276,27 @@ void Game::Connect()
 	std::cout << "\nEnter Local Port: "; std::cin >> LocalPort;
 	Socket.bind(LocalPort);
 
+	Packet SendData;
+	unsigned char type = PACKET_TYPES::SERVER_CONNECT;
+	SendData.append((void*)&type, 1);
+	Socket.send(SendData, RemoteIp, RemotePort);
+
+	Packet ReceiveData;
+	IpAddress serverIp;
+	unsigned short serverPort;
+	Socket.receive(ReceiveData,serverIp,serverPort);
+	if (((unsigned char*)ReceiveData.getData())[0] == 1)
+	{
+		Hit = MY_HIT;
+		std::cout << "RECEIVE 1" << std::endl;
+	}
+	else 
+	{
+		Hit = OPPONENT_HIT;
+		std::cout << "Receive 2" << std::endl;
+	}
+
 	GameState = PREPARE;
-	Hit = MY_HIT;
 }
 
 void Game::SendData(sf::Packet& packet)
@@ -234,4 +310,34 @@ Packet Game::ReceiveData()
 	IpAddress addr; unsigned short port;
 	Socket.receive(packet, addr, port);
 	return packet;
+}
+
+void Game::RotateCue(Direction dir)
+{
+	cue->Rotate(dir);
+}
+
+void Game::CueSpeedUp()
+{
+	cue->CueAngleSpeedUp();
+}
+
+void Game::CueSpeedDown()
+{
+	cue->CueAngleSpeedDown();
+}
+
+float Game::GetCueAngle()
+{
+	return cue->GetfloatAngle();
+}
+
+void Game::SetCueAngleSpeed(float speed)
+{
+	cue->SetSpeed(speed);
+}
+
+UdpSocket& Game::GetSocket()
+{
+	return this->Socket;
 }

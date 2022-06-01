@@ -20,6 +20,7 @@ Cue::Cue(std::string CueTexturePath)
 	CueSprite->setOrigin(CueTexture->getSize().x + BALL_RADIUS + 1, CueTexture->getSize().y / 2.0);
 	angle = 0;
 	HitPower = 0;
+	CueAngleSpeed = 0.1;
 }
 
 Cue::~Cue()
@@ -47,6 +48,11 @@ Vector2f Cue::GetAngle()
 	return Vector2f(cos(angle * PI / 180), sin(angle * PI / 180));
 }
 
+float Cue::GetfloatAngle()
+{
+	return angle;
+}
+
 void Cue::SetPosition(Vector2f Position)
 {
 	CueSprite->setPosition(Position);	
@@ -60,6 +66,7 @@ void Cue::Update(float distance)
 		CueSprite->setOrigin(CueTexture->getSize().x + BALL_RADIUS + distance / 2, CueTexture->getSize().y / 2.0);
 		IsHit = false;
 	}
+	SetAngle(angle);
 }
 
 void Cue::SetIsHit(bool IsHit)
@@ -90,4 +97,24 @@ void Cue::Hit()
 void Cue::Hide()
 {
 	CueSprite->setPosition(10000, 10000);
+}
+
+void Cue::Rotate(Direction dir)
+{
+	angle += ((dir == CLOCKWISE) ? CueAngleSpeed : -CueAngleSpeed);
+}
+
+void Cue::CueAngleSpeedUp()
+{
+	this->CueAngleSpeed = 0.5;
+}
+
+void Cue::CueAngleSpeedDown()
+{
+	this->CueAngleSpeed = 0.1;
+}
+
+void Cue::SetSpeed(float speed)
+{
+	this->CueAngleSpeed = speed;
 }

@@ -23,6 +23,9 @@ private:
 	// Активна ли фаза удара
 	bool IsHit = false;
 
+	// Скорость вращения Кия
+	float CueAngleSpeed;
+
 public:
 
 	Cue();
@@ -38,6 +41,8 @@ public:
 	void SetAngle(float Angle);
 
 	Vector2f GetAngle();
+
+	float GetfloatAngle();
 
 	// Установка Кия бойком к заданной точке
 	void SetPosition(Vector2f Position);
@@ -57,5 +62,14 @@ public:
 
 	// Делает спрайт невидимым
 	void Hide();
+
+	void Rotate(Direction dir);
+
+	void CueAngleSpeedUp();
+
+	void CueAngleSpeedDown();
+
+	void SetSpeed(float speed);
+
 
 };

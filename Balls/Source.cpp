@@ -3,24 +3,24 @@
 #include "Game.h"
 
 
-
-
-
 /*
-    1) Обработать попадание шаров в лунку ( Немного поправить)
+    ToDo LIST:
+    1) Обработать попадание шаров в лунку (Немного поправить)
     2) Сеть
-    3) Переделать все под GameStates
-    4) Сделать   
+    3) Прицел 
 */
+
 
 int main()
 {
     setlocale(LC_ALL, "RUS");
     sf::RenderWindow window(sf::VideoMode(1600, 900), "Bil'yard!");
 
+   
+
     sf::Music music;
-    music.openFromFile("..\\Music\\Badabum.ogg");
-    music.setPitch(1.5);
+    music.openFromFile("..\\Music\\music.ogg");
+    music.setPitch(0.5);
     music.setLoop(true);
     music.play();
 
@@ -38,17 +38,16 @@ int main()
 
     Game.Connect();
 
+    
+    
     Clock clock;
 
-    float speed = 0.1;
-    float angle = 0;
-    float CueHitDistance = 0;
-
+    
+    
 
     while (window.isOpen())
     {
         float time = clock.getElapsedTime().asMicroseconds();
-       // std::cout << time << "mks" << std::endl;
         clock.restart();
         time /= GAME_SPEED;
 
@@ -61,58 +60,80 @@ int main()
             }        
         }
 
-        if (Keyboard::isKeyPressed(Keyboard::A))
+
+        if (Game.Hit == MY_HIT)
         {
-            Game.SetCueAngle(angle);
-            angle += speed;
-        }
 
-        if (Keyboard::isKeyPressed(Keyboard::D))
-        {
-            Game.SetCueAngle(angle);
-            angle -= speed;
-        }
-
-        if (event.type == Event::EventType::KeyPressed && event.key.code == Keyboard::LShift)
-        {
-            speed = 0.5;
-        }
-
-        if (event.type == Event::EventType::KeyReleased && event.key.code == Keyboard::LShift)
-        {
-            speed = 0.1;
-        }
-
-
-        
-
-        
-        if (Mouse::isButtonPressed(Mouse::Button::Left))
-        {
-            Vector2i MousePosition = Mouse::getPosition(window);
-            if (Game.IsHitPanelActive(Vector2f(MousePosition.x,MousePosition.y)) && Game.GameState == PREPARE)
+            if (Keyboard::isKeyPressed(Keyboard::A))
             {
-                Game.SetCueIsHit(true);
-                Game.SetHitPowerPanelIsUpdate(true);
-                Game.SetCueHitDistance(MousePosition.y - Game.GetHitPowerPanelTopPoint());
-                Game.SetCueHitPower(Game.GetCueHitDistance() / Game.GetHitPowerPanelHeight() * MAX_CUE_POWER);
+                Game.RotateCue(CLOCKWISE);
             }
-            else if( Game.GameState == MAINBALL_RESET)
+
+            if (Keyboard::isKeyPressed(Keyboard::D))
             {
-                Game.GetMainBall()->SetPosition(Vector2f(MousePosition.x,MousePosition.y));
+                Game.RotateCue(COUNTERCLOCKWISE);
             }
+
+            if (event.type == Event::EventType::KeyPressed && event.key.code == Keyboard::LShift)
+            {
+                Game.CueSpeedUp();
+            }
+
+            if (event.type == Event::EventType::KeyReleased && event.key.code == Keyboard::LShift)
+            {
+                Game.CueSpeedDown();
+            }
+
+
+
+
+
+            if (Mouse::isButtonPressed(Mouse::Button::Left))
+            {
+                Vector2i MousePosition = Mouse::getPosition(window);
+                if (Game.IsHitPanelActive(Vector2f(MousePosition.x, MousePosition.y)) && Game.GameState == PREPARE)
+                {
+                    Game.SetCueIsHit(true);
+                    Game.SetHitPowerPanelIsUpdate(true);
+                    Game.SetCueHitDistance(MousePosition.y - Game.GetHitPowerPanelTopPoint());
+                    Game.SetCueHitPower(Game.GetCueHitDistance() / Game.GetHitPowerPanelHeight() * MAX_CUE_POWER);
+                }
+                else if (Game.GameState == MAINBALL_RESET)
+                {
+                    Game.GetMainBall()->SetPosition(Vector2f(MousePosition.x, MousePosition.y));
+                }
+            }
+
+            if (Mouse::isButtonPressed(Mouse::Button::Right) && Game.GameState == MAINBALL_RESET)
+            {
+                Game.GameState = PREPARE;
+            }
+
+
+            if (Keyboard::isKeyPressed(Keyboard::Space) && Game.GameState == PREPARE)
+            {
+                Game.GameState = HIT_PHASE;
+                Game.CueHit();
+            }
+
+            Packet data;
+            unsigned char type = PACKET_TYPES::SERVER_PREPARE;
+            data.append((void*)&type, sizeof(unsigned char));
+            float angle = Game.GetCueAngle();
+            data.append((void*)&angle, sizeof(float));
+            float Tempdistance = Game.GetCueHitDistance();
+            data.append((void*)&Tempdistance, sizeof(float));
+            float Tempspeed = Game.GetMainBall()->GetSpeed();
+            data.append((void*)&Tempspeed, sizeof(float));
+            Game.Socket.send(data, Game.RemoteIp, Game.RemotePort);
+            
+
+
+
         }
-
-        if (Mouse::isButtonPressed(Mouse::Button::Right) && Game.GameState == MAINBALL_RESET)
+        else if (Game.Hit == OPPONENT_HIT)
         {
-             Game.GameState = PREPARE;
-        }
 
-
-        if (Keyboard::isKeyPressed(Keyboard::Space) && Game.GameState == PREPARE)
-        {
-            Game.GameState = HIT_PHASE;
-            Game.CueHit();
         }
 
 
